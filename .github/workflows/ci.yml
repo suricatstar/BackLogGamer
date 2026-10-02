@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Lint & Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Faz checkout do código
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Configura o Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. Instala as dependências
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Roda os testes unitários
+      #    Não precisam de banco — usam mocks
+      - name: Run unit tests
+        run: npm run test:unit
+        env:
+          JWT_SECRET: ci_test_secret
+          JWT_REFRESH_SECRET: ci_test_refresh_secret
+          JWT_EXPIRES_IN: 15m
+          JWT_REFRESH_EXPIRES_IN: 7d
+
+      # 5. Roda os testes de integração
+      #    O mongodb-memory-server sobe um MongoDB local no runner
+      #    Não precisamos de MongoDB instalado no CI
+      - name: Run integration tests
+        run: npm run test:int
+        env:
+          JWT_SECRET: ci_test_secret
+          JWT_REFRESH_SECRET: ci_test_refresh_secret
+          JWT_EXPIRES_IN: 15m
+          JWT_REFRESH_EXPIRES_IN: 7d
+          RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}

@@ -10,19 +10,29 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test:unit": "jest --runInBand",
-    "test:int": "jest --runInBand -c jest.integracao.config.js"
+    "test:unit": "jest --config jest.config.js --runInBand",
+    "test:int": "jest --config jest.integracao.config.js --runInBand --forceExit"
   },
   "dependencies": {
+    "axios": "^1.20.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.10.3"
+    "mongoose": "^9.10.3",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "jest": "^30.5.2",
-    "nodemon": "^3.1.14"
+    "mongodb-memory-server": "^11.3.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.3.1"
+  },
+  "mongodbMemoryServer": {
+    "version": "7.0.14"
   }
 }
