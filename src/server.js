@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const app = require('./app');
 const connectDB = require('./config/database');
+const { connectCache } = require('./config/cache');
 
 const PORTA = process.env.PORT || 3001;
 
@@ -13,6 +14,7 @@ const PORTA = process.env.PORT || 3001;
  */
 const start = async () => {
   await connectDB();
+  await connectCache();
 
   app.listen(PORTA, () => {
     console.log(`🚀 Servidor rodando na porta ${PORTA}`);

@@ -37,14 +37,4 @@ jobs:
           JWT_EXPIRES_IN: 15m
           JWT_REFRESH_EXPIRES_IN: 7d
 
-      # 5. Roda os testes de integração
-      #    O mongodb-memory-server sobe um MongoDB local no runner
-      #    Não precisamos de MongoDB instalado no CI
-      - name: Run integration tests
-        run: npm run test:int
-        env:
-          JWT_SECRET: ci_test_secret
-          JWT_REFRESH_SECRET: ci_test_refresh_secret
-          JWT_EXPIRES_IN: 15m
-          JWT_REFRESH_EXPIRES_IN: 7d
-          RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
+

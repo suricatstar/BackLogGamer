@@ -1,4 +1,9 @@
 const rawgClient = require('./rawgClient');
+const { getCache, setCache } = require('../../config/cache');
+
+// TTLs do cache em segundos
+const SEARCH_TTL = 10 * 60; // buscas: 10 minutos
+const GAME_TTL = 60 * 60; // detalhes de jogo: 1 hora (mudam pouco)
 
 /**
  * Camada de integração com a RAWG API.
@@ -22,6 +27,12 @@ const rawgClient = require('./rawgClient');
  * @param {number} pageSize - Itens por página (máx 40 na RAWG)
  */
 const searchGames = async (query, page = 1, pageSize = 20) => {
+  // Normaliza a chave: "Elden Ring " e "elden ring" usam a mesma entrada
+  const cacheKey = `rawg:search:${String(query).trim().toLowerCase()}:${page}:${pageSize}`;
+
+  const cached = await getCache(cacheKey);
+  if (cached) return cached;
+
   try {
     const { data } = await rawgClient.get('/games', {
       params: {
@@ -31,6 +42,8 @@ const searchGames = async (query, page = 1, pageSize = 20) => {
         ordering: '-rating', // mais bem avaliados primeiro
       },
     });
+
+    await setCache(cacheKey, data, SEARCH_TTL);
 
     return data;
   } catch (error) {
@@ -43,8 +56,15 @@ const searchGames = async (query, page = 1, pageSize = 20) => {
  * @param {number|string} gameId
  */
 const getGameById = async (gameId) => {
+  const cacheKey = `rawg:game:${gameId}`;
+
+  const cached = await getCache(cacheKey);
+  if (cached) return cached;
+
   try {
     const { data } = await rawgClient.get(`/games/${gameId}`);
+
+    await setCache(cacheKey, data, GAME_TTL);
 
     return data;
   } catch (error) {
